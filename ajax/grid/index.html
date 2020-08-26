@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <title>jqGrid Demo</title>
+    <link rel="stylesheet" media="screen" href="scripts/themes/jqModal.css">
+    <script src="scripts/jquery-1.3.2.js"></script>
+    <script src="scripts/jquery.jqGrid.js"></script>
+    <script src="scripts/js/jqModal.js"></script>
+    <script src="scripts/js/jqDnR.js"></script>
+
+</head>
+<body>
+    <h2>My Grid Data</h2>
+    <table id="list" class="scroll" cellpadding="0" cellspacing="0">
+
+    </table>
+    <div id="pager" class="scroll" style="text-align: center;"></div>
+<!--    <script src="scripts/jquery.jqGrid.js"></script>-->
+    <script>
+        let lastSelectedId;
+        let theme = 'steel';
+        $('head').append('<link>');
+        $css = $('head').children(':last');
+        $css.attr({
+            rel: 'stylesheet',
+            href: 'scripts/themes/'+theme+'/grid.css',
+            title: 'theme',
+            media: 'screen'
+        });
+        $('#list').jqGrid({
+            url: 'grid.php',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID','Name', 'Price', 'Promotion'],
+            colModel: [
+                {name:'product_id',index:'product_id',width:55, editable:false},
+                {name:'name',index:'name',width:100, editable:true,edittype:'text', editoptions:{size:30, maxlength: 50}},
+                {name:'price',index:'price',width:80,align:'right',formatter:'currency', editable:true},
+                {name:'on_promotion',index:'on_promotion',width:80,formatter:'checkbox', editable :true, edittype:'checkbox'}
+            ],
+            rowNum: 10,
+            rowList: [5,10,20,30],
+            imgpath: 'scripts/themes/'+theme+'/images',
+            pager: $('#pager'),
+            sortname: 'product_id',
+            viewrecords: true,
+            sortorder: 'desc',
+            caption: 'JSON Examples',
+            width: 600,
+            height: 250,
+            onSelectRow: function (id) {
+                if (id && id !== lastSelectedId){
+                    $('#list').restoreRow(lastSelectedId);
+                    $('#list').editRow(id, true, null, onSaveSuccess);
+                    lastSelectedId = id;
+                }
+            },
+            editurl: 'grid.php?action=save'
+        });
+
+        function onSaveSuccess(xhr){
+            response = xhr.responseText;
+            if (response == 1){
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
